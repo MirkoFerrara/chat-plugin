@@ -1,11 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginService } from './services/login.service';
 import { ChatService } from './services/chat.service';
 import { UserService } from './services/user.service';
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { UserListComponent } from './components/read-all-users/user-list.component';
-
 
 @Component({
   selector: 'app-chat-plugin',
@@ -102,8 +101,8 @@ import { UserListComponent } from './components/read-all-users/user-list.compone
       font-weight: 600;
     }
   `]
-}) 
-export class ChatPlugin implements OnInit, OnDestroy {
+})
+export class ChatPlugin implements OnInit, OnChanges, OnDestroy {
   // ⭐ INPUT CONFIGURABILI
   @Input() userId?: string;
   @Input() token?: string;
@@ -115,6 +114,7 @@ export class ChatPlugin implements OnInit, OnDestroy {
 
   chatId?: string;
   selectedUsername?: string;
+  private initialized = false;
 
   constructor(
     private loginService: LoginService,
@@ -123,8 +123,24 @@ export class ChatPlugin implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log('🚀🚀🚀 CHAT PLUGIN v2.0 - NUOVA VERSIONE! 🚀🚀🚀');
-    console.log('💬 Chat Plugin - Inizializzato con parametri:', {
+    console.log('🔌 Chat Plugin - ngOnInit chiamato');
+  }
+
+  // ⭐ NUOVO: Reagisce quando gli Input cambiano
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('🔄 ngOnChanges chiamato:', changes);
+    
+    // Controlla se abbiamo tutti i parametri necessari
+    if (this.userId && this.token && this.apiUrl && this.wsUrl && !this.initialized) {
+      this.initializePlugin();
+    }
+  }
+
+  private initializePlugin() {
+    if (this.initialized) return;
+    
+    console.log('🚀🚀🚀 CHAT PLUGIN v3.0 - INIZIALIZZAZIONE! 🚀🚀🚀');
+    console.log('💬 Chat Plugin - Parametri ricevuti:', {
       userId: this.userId,
       token: this.token ? '***' : 'MANCANTE',
       apiUrl: this.apiUrl,
@@ -135,22 +151,17 @@ export class ChatPlugin implements OnInit, OnDestroy {
     if (this.userId && this.token) {
       this.loginService.setCredentials(this.userId, this.token);
       console.log('✅ Credenziali configurate per userId:', this.userId);
-    } else {
-      console.error('❌ userId o token MANCANTI!');
     }
 
-    // ✅ Configura gli URL dinamicamente
+    // ✅ Configura gli URL
     if (this.apiUrl && this.wsUrl) {
       this.chatService.configureUrls(this.apiUrl, this.wsUrl);
       this.userService.configureUrl(this.apiUrl);
       console.log('✅ URLs configurati:', { apiUrl: this.apiUrl, wsUrl: this.wsUrl });
-    } else {
-      console.warn('⚠️ apiUrl e wsUrl non forniti, uso environment di default');
-      console.warn('⚠️ apiUrl:', this.apiUrl);
-      console.warn('⚠️ wsUrl:', this.wsUrl);
     }
 
-    console.log('📋 Mostrando vista: Lista Utenti (chatId=' + this.chatId + ')');
+    console.log('📋 Mostrando vista: Lista Utenti');
+    this.initialized = true;
     this.chatReady.emit();
   }
 

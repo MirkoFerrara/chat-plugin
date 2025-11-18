@@ -126,11 +126,7 @@ export class ChatPlugin implements OnInit, OnChanges, OnDestroy {
     console.log('🔌 Chat Plugin - ngOnInit chiamato');
   }
 
-  // ⭐ NUOVO: Reagisce quando gli Input cambiano
   ngOnChanges(changes: SimpleChanges) {
-    console.log('🔄 ngOnChanges chiamato:', changes);
-    
-    // Controlla se abbiamo tutti i parametri necessari
     if (this.userId && this.token && this.apiUrl && this.wsUrl && !this.initialized) {
       this.initializePlugin();
     }
@@ -140,27 +136,25 @@ export class ChatPlugin implements OnInit, OnChanges, OnDestroy {
     if (this.initialized) return;
     
     console.log('🚀🚀🚀 CHAT PLUGIN v3.0 - INIZIALIZZAZIONE! 🚀🚀🚀');
-    console.log('💬 Chat Plugin - Parametri ricevuti:', {
-      userId: this.userId,
-      token: this.token ? '***' : 'MANCANTE',
-      apiUrl: this.apiUrl,
-      wsUrl: this.wsUrl
-    });
 
-    // ✅ Configura le credenziali
+    // ✅ Configura credenziali
     if (this.userId && this.token) {
       this.loginService.setCredentials(this.userId, this.token);
-      console.log('✅ Credenziali configurate per userId:', this.userId);
+      
+      // ⭐ NUOVO: Configura auth nei service
+      this.chatService.configureAuth(this.userId, this.token);
+      this.userService.configureAuth(this.userId, this.token);
+      
+      console.log('✅ Credenziali configurate');
     }
 
-    // ✅ Configura gli URL
+    // ✅ Configura URLs
     if (this.apiUrl && this.wsUrl) {
       this.chatService.configureUrls(this.apiUrl, this.wsUrl);
       this.userService.configureUrl(this.apiUrl);
-      console.log('✅ URLs configurati:', { apiUrl: this.apiUrl, wsUrl: this.wsUrl });
+      console.log('✅ URLs configurati');
     }
 
-    console.log('📋 Mostrando vista: Lista Utenti');
     this.initialized = true;
     this.chatReady.emit();
   }

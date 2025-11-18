@@ -1,33 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { LoginService } from './login.service';
 import { w3cwebsocket as W3CWebSocket } from 'websocket'; 
-import { ChatRoomResponse } from '../components/chat/models/char-room-response.model';
-import { ChatMessage } from '../components/chat/models/chat-message.model';
+import { ChatRoomResponse } from '../components/chat/models/char-room-response.model'; 
 import { ChatRoomRequest } from '../components/chat/models/chat-room-request.model';
-
-@Injectable({ providedIn: 'root' })
+import { ChatMessage } from '../components/chat/models/chat-message.model';
+ @Injectable({ providedIn: 'root' })
 export class ChatService {
-  
-  // ✅ URLs configurabili dinamicamente
   private baseUrl = environment.apiUrl;
   private wsUrl = environment.wsUrl;
+  private userId: string | null = null;
+  private token: string | null = null;
   
   private wsMap = new Map<string, W3CWebSocket>();
   private subjects = new Map<string, BehaviorSubject<ChatMessage[]>>();
 
   constructor(private http: HttpClient, private login: LoginService) {}
 
-  /**
-   * ⭐ NUOVO: Configura URLs a runtime
-   */
   configureUrls(apiUrl: string, wsUrl: string): void {
     console.log('🔧 Configurazione URLs:', { apiUrl, wsUrl });
     this.baseUrl = apiUrl;
     this.wsUrl = wsUrl;
+  }
+
+  configureAuth(userId: string, token: string): void {
+    console.log('🔧 Configurazione Auth');
+    this.userId = userId;
+    this.token = token;
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    if (this.token) headers = headers.set('Authorization', `Bearer ${this.token}`);
+    if (this.userId) headers = headers.set('UserId', this.userId);
+    return headers;
   }
 
   private getSubject(chatId: string): BehaviorSubject<ChatMessage[]> {
@@ -38,39 +47,37 @@ export class ChatService {
   }
 
   openChat(targetUserId: string): Observable<ChatRoomResponse> {
-    const currentUserId = this.login.getUserId();
-    if (!currentUserId) return throwError(() => new Error('User non loggato'));
-
     const request: ChatRoomRequest = {
-      participantIds: [currentUserId, targetUserId]
+      participantIds: [this.userId!, targetUserId]
     };
 
-    return this.http
-      .post<ChatRoomResponse>(`${this.baseUrl}/chat/getChatRoom`, request)
-      .pipe(
-        tap(chatRoom => {
-          console.log('✅ Chat room ottenuta:', chatRoom.id);
-          this.connect(chatRoom.id);
-        }),
-        catchError(err => {
-          console.error('❌ Errore apertura chat', err);
-          return throwError(() => err);
-        })
-      );
+    return this.http.post<ChatRoomResponse>(
+      `${this.baseUrl}/chat/getChatRoom`, 
+      request,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      tap(chatRoom => {
+        console.log('✅ Chat room ottenuta:', chatRoom.id);
+        this.connect(chatRoom.id);
+      }),
+      catchError(err => {
+        console.error('❌ Errore apertura chat', err);
+        return throwError(() => err);
+      })
+    );
   }
 
   connect(chatId: string) {
-    const userId = this.login.getUserId();
-    const token = this.login.getToken();
-    if (!userId || !token) return;
-
     const existing = this.wsMap.get(chatId);
     if (existing && existing.readyState === existing.OPEN) return;
 
-    const ws = new W3CWebSocket(`${this.wsUrl}/chat?chatId=${chatId}&userId=${userId}&token=${token}`);
+    const ws = new W3CWebSocket(
+      `${this.wsUrl}/chat?chatId=${chatId}&userId=${this.userId}&token=${this.token}`
+    );
     this.wsMap.set(chatId, ws);
 
     ws.onopen = () => console.log(`✅ WS connesso a ${chatId}`);
+    
     ws.onmessage = e => {
       try {
         const msg: ChatMessage = JSON.parse(e.data.toString());
@@ -98,6 +105,7 @@ export class ChatService {
         console.error('❌ Errore parsing messaggio:', err);
       }
     };
+    
     ws.onclose = () => {
       console.warn(`⚠️ WS chiuso per chat ${chatId}`);
       this.wsMap.delete(chatId);
@@ -115,46 +123,59 @@ export class ChatService {
       return;
     }
 
-    ws.send(
-      JSON.stringify({
-        ...msg,
-        chatId,
-        senderId: this.login.getUserId(),
-        createdAt: new Date().toISOString(),
-        messageId: msg.messageId || crypto.randomUUID()
-      })
-    );
+    ws.send(JSON.stringify({
+      ...msg,
+      chatId,
+      senderId: this.userId,
+      createdAt: new Date().toISOString(),
+      messageId: msg.messageId || crypto.randomUUID()
+    }));
   }
 
   uploadFiles(chatId: string, files: File[]) {
     const fd = new FormData();
     files.forEach(f => fd.append('files', f));
-    return this.http.post<{ fileUrl: string }[]>(`${this.baseUrl}/chat/uploadFiles?chatId=${chatId}`, fd)
-      .pipe(map(res => res.map(r => ({
+    
+    return this.http.post<{ fileUrl: string }[]>(
+      `${this.baseUrl}/chat/uploadFiles?chatId=${chatId}`, 
+      fd,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      map(res => res.map(r => ({
         fileUrl: r.fileUrl,
         fileName: r.fileUrl.split('/').pop()!
-      }))));
+      })))
+    );
   }
 
   getFile(chatId: string, fileUrl: string): Observable<Blob> {
     const clean = fileUrl.replace(/^\/?uploads\//, '');
     return this.http.get(
       `${this.baseUrl}/chat/file/${encodeURIComponent(clean)}?chatId=${chatId}`,
-      { responseType: 'blob' }
+      { 
+        responseType: 'blob',
+        headers: this.getAuthHeaders()
+      }
     );
   }
 
+  // ⭐ METODO PER CHIUDERE TUTTO
   disconnectAll() {
     console.log('🔌 Disconnessione di tutte le WebSocket...');
+    
     for (const [chatId, ws] of this.wsMap.entries()) {
       try {
-        ws.close();
-        console.log(`💤 WS chiusa per chat ${chatId}`);
+        if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+          ws.close();
+          console.log(`💤 WS chiusa per chat ${chatId}`);
+        }
       } catch (err) {
         console.warn(`⚠️ Errore chiusura WS per ${chatId}`, err);
       }
     }
+    
     this.wsMap.clear();
     this.subjects.clear();
+    console.log('✅ Tutte le connessioni chiuse');
   }
 }

@@ -15,12 +15,10 @@ export class UserListComponent implements OnInit {
 
   isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-  // Dati utenti
   userList: UserRest[] = [];
   error: any = null;
   loading = false;
 
-  // Context Menu State
   contextMenuVisible = false;
   contextMenuX = 0;
   contextMenuY = 0;
@@ -29,8 +27,9 @@ export class UserListComponent implements OnInit {
 
   constructor(private userService: UserService) {}
 
-  ngOnInit() {
-    this.readAllUsers();
+  ngOnInit() { 
+    console.log('📋 UserListComponent - ngOnInit (aspetto configurazione auth)');
+    setTimeout(() => this.readAllUsers(), 0);
   }
 
   public readAllUsers() {

@@ -6,6 +6,7 @@ import { UserService } from './services/user.service';
 import { ChatRoomComponent } from './components/chat/chat-room/chat-room.component';
 import { UserListComponent } from './components/read-all-users/user-list.component';
 
+
 @Component({
   selector: 'app-chat-plugin',
   imports: [CommonModule, ChatRoomComponent, UserListComponent],
@@ -31,12 +32,21 @@ import { UserListComponent } from './components/read-all-users/user-list.compone
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      height: 600px;
+      min-height: 400px;
+    }
+
     .chat-plugin-container {
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
       background: #f5f5f5;
+      border-radius: 12px;
+      overflow: hidden;
     }
     
     .user-list-view,
@@ -50,10 +60,12 @@ import { UserListComponent } from './components/read-all-users/user-list.compone
     .user-list-view h3 {
       padding: 20px;
       margin: 0;
-      background: white;
-      border-bottom: 2px solid #e0e0e0;
-      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .chat-header {
@@ -61,32 +73,36 @@ import { UserListComponent } from './components/read-all-users/user-list.compone
       align-items: center;
       gap: 15px;
       padding: 15px 20px;
-      background: white;
-      border-bottom: 2px solid #e0e0e0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .back-btn {
-      background: #667eea;
+      background: rgba(255, 255, 255, 0.2);
       color: white;
-      border: none;
+      border: 2px solid white;
       padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
     }
 
     .back-btn:hover {
-      background: #5568d3;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-3px);
     }
 
     .chat-header h3 {
       margin: 0;
-      color: #333;
       flex: 1;
+      font-size: 18px;
+      font-weight: 600;
     }
   `]
-})
+}) 
 export class ChatPlugin implements OnInit, OnDestroy {
   // ⭐ INPUT CONFIGURABILI
   @Input() userId?: string;

@@ -1,0 +1,122 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
+/* Messaggi propri - a destra */
+:host ::ng-deep .message.own {
+  align-self: flex-end !important; /* ✅ forza allineamento globale */
+  align-items: flex-end;
+}
+
+/* Contenitore messaggio */
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 65%;
+  width: fit-content;
+  animation: slideIn 0.2s ease-out;
+  align-self: flex-start; /* 🔹 Default: sinistra */
+}
+
+/* Messaggi degli altri - a sinistra */
+.message:not(.own) {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+/* Messaggi propri - a destra */
+.message.own {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+/* Bubble di testo */
+.text {
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 18px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Bubble degli altri - bianco */
+.message:not(.own) .text {
+  background: white;
+  color: #000;
+  border-bottom-left-radius: 4px;
+}
+
+/* Bubble propri - blu/viola */
+.message.own .text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  object-fit: cover;
+}
+
+.file {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+}
+
+.file:hover {
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Altri (sinistra) */
+.message:not(.own) .text {
+  background: white;
+  color: #000;
+  border-bottom-left-radius: 4px;
+}
+
+/* Propri (destra) */
+.message.own .text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.own .file {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.message.own .file:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

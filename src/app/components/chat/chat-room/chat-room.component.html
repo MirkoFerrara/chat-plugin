@@ -1,0 +1,11 @@
+<div class="chat-room">
+  <div class="messages" #msgContainer>
+    <app-chat-message
+      *ngFor="let msg of messages"
+      [messageGroup]="[msg]"
+      [isOwnMessage]="msg.senderId === currentUserId">
+    </app-chat-message>
+  </div>
+
+  <app-chat-input (sendMessage)="onSend($event)"></app-chat-input>
+</div>

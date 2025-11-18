@@ -1,0 +1,37 @@
+<div 
+  *ngIf="visible && config" 
+  class="context-menu"
+  [style.left.px]="x"
+  [style.top.px]="y"
+  (click)="$event.stopPropagation()"
+>
+  <!-- Header opzionale -->
+  <div *ngIf="config.header" class="context-menu-header">
+    <strong>{{ config.header }}</strong>
+  </div>
+  
+  <!-- Menu Items -->
+  <ng-container *ngFor="let item of config.items">
+    <!-- Divider -->
+    <hr *ngIf="item.divider" class="context-menu-separator">
+    
+    <!-- Menu Item -->
+    <button 
+      *ngIf="!item.divider"
+      class="context-menu-item"
+      [class.danger]="item.danger"
+      [disabled]="item.disabled"
+      (click)="onItemClick(item)"
+    >
+      <span *ngIf="item.icon" class="menu-icon">{{ item.icon }}</span>
+      <span>{{ item.label }}</span>
+    </button>
+  </ng-container>
+</div>
+
+<!-- Overlay -->
+<div 
+  *ngIf="visible" 
+  class="context-menu-overlay"
+  (click)="close()"
+></div>

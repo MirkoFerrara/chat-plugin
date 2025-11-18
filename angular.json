@@ -11,9 +11,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular/build:application",
+          "builder": "ngx-build-plus:browser",
           "options": {
-            "browser": "src/main.ts",
+            "outputPath": "dist/chat-plugin",
+            "index": "src/index.html",
+            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -26,7 +28,8 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -53,7 +56,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "ngx-build-plus:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "chat-plugin:build:production"
@@ -65,10 +68,10 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular/build:extract-i18n"
+          "builder": "ngx-build-plus:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "ngx-build-plus:karma",
           "options": {
             "polyfills": [
               "zone.js",

@@ -1,0 +1,32 @@
+<div class="chat-input-container">
+
+  <!-- 🔹 Allegati -->
+  <app-chat-attachments
+    [files]="selectedFiles"
+    [previews]="filePreviews"
+    (remove)="removeFile($event)">
+  </app-chat-attachments>
+
+  <div class="input-actions">
+    <!-- 📝 Input messaggio -->
+    <div
+      #messageInput
+      class="message-input"
+      contenteditable="true"
+      placeholder="Scrivi un messaggio..."
+      (keydown)="onKeyDown($event)"
+      (input)="onTextChanged()"
+      (paste)="onPaste($event)"
+      (drop)="onDrop($event)"
+      (dragover)="onDragOver($event)">
+    </div>
+
+    <!-- 🔘 Bottoni -->
+    <input type="file" #fileInput (change)="onFilesSelected(fileInput)" hidden multiple>
+    <button class="attach-button" (click)="fileInput.click()">📎</button>
+    <button
+      class="send-button"
+      [disabled]="!canSend"
+      (click)="onSend()">📤</button>
+  </div>
+</div>

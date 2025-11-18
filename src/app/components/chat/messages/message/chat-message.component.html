@@ -1,0 +1,30 @@
+<div class="message" [class.own]="isOwnMessage">
+  <ng-container *ngFor="let part of messageGroup">
+    
+    <!-- 📝 Testo -->
+    <div *ngIf="part.type === 'text'" class="text">
+      {{ part.content }}
+    </div>
+
+    <!-- 🖼️ Immagine già caricata -->
+    <img *ngIf="part.type === 'file' && isImage(part.fileName) && part.localUrl"
+         [src]="part.localUrl"
+         [alt]="part.fileName"
+         class="image"
+         (click)="openImagePreview(part.localUrl!, part.fileName!)" />
+
+    <!-- ⏳ Placeholder immagine mentre si carica -->
+    <div *ngIf="part.type === 'file' && isImage(part.fileName) && !part.localUrl"
+         class="image-loading">
+         {{ part.fileName }}
+    </div>
+
+    <!-- 📎 File non immagine -->
+    <div *ngIf="part.type === 'file' && !isImage(part.fileName)"
+         class="file"
+         (click)="fileClick.emit({ url: part.fileUrl!, name: part.fileName! })">
+      📎 {{ part.fileName }}
+    </div>
+
+  </ng-container>
+</div>

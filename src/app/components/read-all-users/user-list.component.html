@@ -1,0 +1,38 @@
+<div>
+  <!-- Lista utenti -->
+  <div *ngIf="userList.length > 0; else noUsers">
+    <ul class="user-list">
+      <li 
+        *ngFor="let user of userList"
+        (contextmenu)="openContextMenu($event, user)"
+        (click)="isTouchDevice && openContextMenu($event, user)"
+        class="user-item"
+      >
+        <div class="user-info">
+          <strong class="username">{{ user.username }}</strong>
+          <span class="email">{{ user.email }}</span>
+        </div>
+      </li>
+    </ul>
+    
+    <p class="hint">💡 Fai click destro su un utente per vedere le opzioni</p>
+  </div>
+
+  <ng-template #noUsers>
+    <p class="no-users">Nessun utente trovato. Clicca "Carica Utenti" per iniziare.</p>
+  </ng-template>
+
+  <div *ngIf="error" class="error-message">
+    <strong>⚠️ Errore:</strong> {{ error.detail }}
+  </div>
+
+  <!-- Context Menu -->
+  <app-context-menu
+    [visible]="contextMenuVisible"
+    [x]="contextMenuX"
+    [y]="contextMenuY"
+    [config]="contextMenuConfig"
+    (closed)="onContextMenuClosed()"
+  ></app-context-menu>
+
+</div>

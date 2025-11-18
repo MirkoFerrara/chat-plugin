@@ -1,0 +1,268 @@
+/* ========================================
+   VARIABILI
+   ======================================== */
+:host {
+  --primary-color: #667eea;
+  --primary-dark: #764ba2;
+  --bg-lighter: #f0f2f5;
+  --transition: all 0.2s ease;
+}
+
+/* ========================================
+   BOTTONE TOGGLE ALLEGATI
+   ======================================== */
+.attachments-btn {
+  align-self: flex-start;
+  background: var(--bg-lighter);
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.attachments-btn:hover {
+  background: #e6e6e6;
+  border-color: #bbb;
+  transform: translateY(-1px);
+}
+
+.attachments-btn:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   POPUP MODALE
+   ======================================== */
+.attachments-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+  }
+  to { 
+    opacity: 1; 
+  }
+}
+
+.popup-content {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   HEADER POPUP
+   ======================================== */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  background: var(--bg-lighter);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.close-btn:hover {
+  background: #e8ebef;
+  transform: rotate(90deg);
+}
+
+/* ========================================
+   GRIGLIA ALLEGATI
+   ======================================== */
+.attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.attachments-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.attachments-grid::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.attachments-grid::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* ========================================
+   ITEM ALLEGATO
+   ======================================== */
+.attachment-item {
+  position: relative;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  background: #fafafa;
+  transition: var(--transition);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.attachment-item:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Preview immagine */
+.preview-image {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Icona file */
+.file-icon {
+  font-size: 40px;
+  margin: 12px 0;
+  opacity: 0.7;
+}
+
+/* Nome file */
+.file-name {
+  display: block;
+  font-size: 11px;
+  color: #555;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* ========================================
+   BOTTONE RIMUOVI
+   ======================================== */
+.remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #e53e3e;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+}
+
+.attachment-item:hover .remove-btn {
+  opacity: 1;
+}
+
+.remove-btn:hover {
+  background: #fee;
+  color: #c53030;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 640px) {
+  .popup-content {
+    width: 95%;
+    max-width: none;
+    padding: 16px;
+  }
+
+  .attachments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+  }
+
+  .file-name {
+    font-size: 10px;
+  }
+
+  .preview-image {
+    height: 70px;
+  }
+}
+
+.preview-image {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border: 1px solid #e0e0e0;
+  cursor: zoom-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+

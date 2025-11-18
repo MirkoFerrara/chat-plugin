@@ -1,0 +1,19 @@
+<div class="chat-plugin-container">
+  
+  <!-- 📋 VISTA: Lista Utenti (default) -->
+  <div *ngIf="!chatId" class="user-list-view">
+    <h3>💬 Seleziona un utente per chattare</h3>
+    <app-user-list (userSelected)="onUserSelected($event)"></app-user-list>
+  </div>
+
+  <!-- 💬 VISTA: Chat Room (quando c'è chatId) -->
+  <div *ngIf="chatId" class="chat-room-view">
+    <div class="chat-header">
+      <button class="back-btn" (click)="backToUserList()">← Indietro</button>
+      <h3>Chat con {{ selectedUsername || 'Utente' }}</h3>
+    </div>
+    
+    <app-chat-room [chatId]="chatId"></app-chat-room>
+  </div>
+
+</div>

@@ -38,12 +38,12 @@ const path = require('path');
   }
 
   const pluginDir = './plugin';
-  const targetFile = path.join(pluginDir, 'chat-plugin.js');
+  const targetFile = path.join(pluginDir, 'chat-plugin-fe.js');
   
   await fs.ensureDir(pluginDir);
   await concat(sourceFiles, targetFile);
 
   const stats = fs.statSync(targetFile);
-  console.log(`\n✅ Plugin creato: plugin/chat-plugin.js`);
+  console.log(`\n✅ Plugin creato: plugin/chat-plugin-fe.js`);
   console.log(`📊 Dimensione: ${(stats.size / 1024).toFixed(2)} KB\n`);
 })();

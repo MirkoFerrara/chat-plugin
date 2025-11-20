@@ -64,14 +64,12 @@ export class ChatRoomComponent
       this.messages = msgs;
       this.loadImages();
 
-      // ⚡ non scrolliamo subito: segniamo che dobbiamo farlo
       this.mustScrollToBottom = true;
-      this.cdRef.detectChanges(); // forza aggiornamento DOM
+      this.cdRef.detectChanges();
     });
   }
 
   ngAfterViewChecked() {
-    // ✅ qui Angular ha già reso i messaggi nel DOM
     if (this.mustScrollToBottom) {
       this.scrollToBottomInstant();
       this.mustScrollToBottom = false;
@@ -158,7 +156,7 @@ export class ChatRoomComponent
             const url = URL.createObjectURL(blob);
             msg.localUrl = url;
             this.imageCache.set(msg.fileUrl!, url);
-            this.mustScrollToBottom = true; // 🔄 riallinea dopo caricamento
+            this.mustScrollToBottom = true;
             this.cdRef.detectChanges();
           },
           error: err => console.error('❌ Errore caricamento immagine', err)
